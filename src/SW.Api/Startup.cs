@@ -33,7 +33,8 @@ namespace SW.Api
         {
             services.AddControllers();
             services.AddScoped<IPersonSource, PersonWebSource>();
-     
+            services.AddScoped<IGetPersons, PersonSourceAWS>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

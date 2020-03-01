@@ -1,48 +1,27 @@
-﻿using Newtonsoft.Json;
-using SW.Api.Contracts;
+﻿using SW.Api.Contracts;
 using SW.Api.Models;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace SW.Api.Services
 {
     public class PersonWebSource : IPersonSource
     {
         public List<Person> Persons { get; set; }
-        public PersonWebSource()
+
+        public IGetPersons PersonSource { get; set; }
+        public PersonWebSource(IGetPersons personSource)
         {
             Persons = new List<Person>();
-
+            PersonSource = personSource;
         }
 
         public async Task Init()
         {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri("https://f43qgubfhf.execute-api.ap-southeast-2.amazonaws.com");
-                httpClient.Timeout = new TimeSpan(0, 0, 30);
-                httpClient.DefaultRequestHeaders.Clear();
-
-                var response = await httpClient.GetAsync("sampletest");
-                response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (response.Content.Headers.ContentType.MediaType == "application/json")
-                {
-                    Persons = JsonConvert.DeserializeObject<List<Person>>(content);
-                }
-                else if (response.Content.Headers.ContentType.MediaType == "application/xml")
-                {
-                    var serializer = new XmlSerializer(typeof(List<Person>));
-                    Persons = (List<Person>)serializer.Deserialize(new StringReader(content));
-                }
-            }
+            var persons = await PersonSource.GetPersons();
+            Persons = persons.ToList();
         }
         public async Task<IList<GenderStatistics>> GenderStatistics()
         {
