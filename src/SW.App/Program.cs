@@ -39,7 +39,6 @@ namespace SW.App
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
 
-                //var person = new Person();
                 if (response.Content.Headers.ContentType.MediaType == "application/json")
                 {
                     var person = JsonConvert.DeserializeObject<Person>(content);
@@ -70,20 +69,28 @@ namespace SW.App
                 {
                     var persons = JsonConvert.DeserializeObject<List<Person>>(content);
 
-                    foreach (var person in persons)
-                    {
-                        Console.WriteLine($"Name : {person.First}  {person.last}, Age : {person.age} , Gender: {person.gender} ");
-                    }
+                    PrintPerson(persons);
 
                 }
                 else if (response.Content.Headers.ContentType.MediaType == "application/xml")
                 {
                     var serializer = new XmlSerializer(typeof(Person));
-                    var person = (Person)serializer.Deserialize(new StringReader(content));
+                    var persons = (List<Person>)serializer.Deserialize(new StringReader(content));
+
+                    PrintPerson(persons);
                 }
             }
 
         }
+
+        private static void PrintPerson(List<Person> persons)
+        {
+            foreach (var person in persons)
+            {
+                Console.WriteLine($"Name : {person.First}  {person.last}, Age : {person.age} , Gender: {person.gender} ");
+            }
+        }
+
         private static async Task TestGenderStatistics()
         {
             using (var httpClient = new HttpClient())
@@ -99,20 +106,25 @@ namespace SW.App
                 if (response.Content.Headers.ContentType.MediaType == "application/json")
                 {
                     var stats = JsonConvert.DeserializeObject<List<GenderStatistics>>(content);
-
-                    foreach (var stat in stats)
-                    {
-                        Console.WriteLine($"Age : {stat.age}  , Male : {stat.male} , Female: {stat.female} , Others : {stat.others}");
-                    }
+                    PrintStats(stats);
 
                 }
                 else if (response.Content.Headers.ContentType.MediaType == "application/xml")
                 {
                     var serializer = new XmlSerializer(typeof(Person));
-                    var person = (Person)serializer.Deserialize(new StringReader(content));
+                    var stats = (List<GenderStatistics>)serializer.Deserialize(new StringReader(content));
+                    PrintStats(stats);
                 }
             }
         }
+
+        private static void PrintStats(List<GenderStatistics> stats)
+        {
+            foreach (var stat in stats)
+            {
+                Console.WriteLine($"Age : {stat.age}  , Male : {stat.male} , Female: {stat.female} , Others : {stat.others}");
+            }
         }
+    }
     
 }
