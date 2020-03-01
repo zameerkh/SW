@@ -23,7 +23,7 @@ It makesuse of interfaces and separates various implementations. For now, IPerso
 - Microsoft.Extensions.Caching.Redis
 
 #### Known Limitations / Critique ####
-
+- More unit tests could be thought of. I have done one to illustrate the idea of tests
 - Paging could be implemented to improve performance if the data source has large number of records, with each request returning a smaller page size
 - Azure deployment of web api
 - Moving constants to appSettings.json
